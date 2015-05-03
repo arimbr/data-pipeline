@@ -1,9 +1,11 @@
+import sys
 import json
 
 import pandas as pd
 
-IFILE = "items_dump.jl"
-OFILE = "items_clean.json"
+# IFILE = "items_dump.jl"
+IFILE = sys.argv[1]
+OFILE = sys.argv[2]
 
 def get_line_from_jl(ifile):
     """
