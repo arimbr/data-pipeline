@@ -7,6 +7,7 @@ import pandas as pd
 IFILE = sys.argv[1]
 OFILE = sys.argv[2]
 
+
 def get_line_from_jl(ifile):
     """
     @ifile: jl file name
@@ -15,6 +16,7 @@ def get_line_from_jl(ifile):
     with open(ifile) as f:
         for line in f:
             yield json.loads(line.strip())
+
 
 def get_values_from_jl(ifile, key):
     """
@@ -39,6 +41,7 @@ def get_ocurrences(l1, l2):
     """
     return [l2.count(el) for el in l1]
 
+
 def get_matrix_from_jl(ifile, cols, ind, col):
     """
     @ifile: jl file name
@@ -53,10 +56,12 @@ def get_matrix_from_jl(ifile, cols, ind, col):
         matrix[d[ind]] = get_ocurrences(cols, d[col]) + [d["title"]]  # refactor to move "title" to args
     return matrix
 
+
 def get_dataframe_from_jl(ifile, ind, col):
     cols = get_values_from_jl(ifile, col)
     matrix = get_matrix_from_jl(ifile, cols, ind, col)
     return pd.DataFrame(data=matrix, index=(cols+["title"]))  # refactor
+
 
 def clean(df, index_limit, column_limit):
     """
@@ -97,26 +102,23 @@ if __name__ == '__main__':
     # Get tags names ["java", ..., "python"]
     tags = get_values_from_jl(IFILE, "tags")
 
-    # Get dictionary matrix with each element "1334":[0,1,0,...,0, "Java Developer"]
-    matrix = get_matrix_from_jl(IFILE, tags, "id", "tags")
-
     # Get data frame with rows with tags and title, and columns with ids
-    fd = get_dataframe_from_jl(IFILE, "id", "tags")
+    df = get_dataframe_from_jl(IFILE, "id", "tags")
 
     # Get data frame with rows with ids, and columns with tags and title
-    df = fd.transpose()
+    df = df.transpose()
 
     # Get id-titles series
     titles = df.iloc[:, -1]
 
     # Clean df based on tags frequency and jobs frequency
-    df_clean = clean(df.iloc[:, :-1], 3, 3)
+    df = clean(df.iloc[:, :-1], 3, 3)
 
     # Add titles column to df_clean (BUG: if there is a tag with name 'title'
-    df_clean_full = df_clean.join(titles)
+    df = df.join(titles)
 
     # Get json {"id": 1243, "tags": ["java",...], "title": "Java developer"}
-    js = df_to_json(df_clean_full)
+    js = df_to_json(df)
 
     # Write to file items_clean.json
     open(OFILE, "w").write(js)
