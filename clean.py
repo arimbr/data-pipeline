@@ -99,9 +99,6 @@ def df_to_json(df):
 
 
 if __name__ == '__main__':
-    # Get tags names ["java", ..., "python"]
-    tags = get_values_from_jl(IFILE, "tags")
-
     # Get data frame with rows with tags and title, and columns with ids
     df = get_dataframe_from_jl(IFILE, "id", "tags")
 
