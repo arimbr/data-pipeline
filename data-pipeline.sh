@@ -8,7 +8,7 @@ mongoexport -d stackoverflow -c jobs -f id,title,tags -q '{$query: {date: {$exis
 head -n 5000 items_dump.jl > items_sample.jl
 
 # Clean jobs and tags, and convert from .jl to .json
-python clean.py items_dump5000.jl items_clean.json
+python clean.py items_sample.jl items_clean.json
 
 # Sync data with S3
 s3cmd sync --acl-public items_clean.json s3://arimbr
